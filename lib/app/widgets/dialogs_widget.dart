@@ -34,11 +34,8 @@ class DialogsWidget {
         ),
       );
 
-  static Future<void> warning({
-    required BuildContext context,
-    String? title,
-    required String message
-  }) {
+  static Future<void> warning(
+      {required BuildContext context, String? title, required String message}) {
     return showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
@@ -56,6 +53,47 @@ class DialogsWidget {
         ],
       ),
       barrierDismissible: false,
+    );
+  }
+
+  static Future<void> loading({
+    required BuildContext context,
+    required String title,
+    required String message,
+  }) async {
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => SimpleDialog(
+        contentPadding: const EdgeInsets.fromLTRB(
+          24,
+          12,
+          24,
+          16,
+        ),
+
+        ///Usado para evitar o usuário feche o dialogo com botão do dispositivo
+        title: WillPopScope(
+          onWillPop: () async => false,
+          child: Text(title),
+        ),
+        children: [
+          SizedBox(
+            width: MediaQuery.sizeOf(context).width,
+            child: Row(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(right: 16),
+                  child: CircularProgressIndicator(),
+                ),
+                Text(
+                  message,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

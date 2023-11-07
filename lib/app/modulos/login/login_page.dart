@@ -12,7 +12,6 @@ import 'package:login_mobx/app/modulos/login/validadores/usuario_validador.dart'
 import 'package:login_mobx/app/modulos/login/widgets/input_widget.dart';
 import 'package:login_mobx/app/widgets/dialogs_widget.dart';
 import 'package:login_mobx/app/widgets/scaffold_widget.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -28,24 +27,31 @@ class _LoginPageState extends State<LoginPage> {
   late String senha;
   late LoginStore store;
 
-  late bool logando;
-
   @override
   void initState() {
     super.initState();
     formkey = GlobalKey<FormState>();
     usuario = '';
     senha = '';
-    logando = false;
     injetarDependencia();
     store = GetIt.I.get<LoginStore>();
 
     scheduleMicrotask(() {
       store.state.observe((value) {
         final state = value.newValue;
-        setState(() {
-          logando = state is LoginCarregandoState;
-        });
+
+        if (state is LoginCarregandoState) {
+          DialogsWidget.loading(
+              context: context, title: 'Login', message: 'Logando ...');
+          return;
+        }
+
+        if (value.oldValue is LoginCarregandoState &&
+            state is! LoginCarregandoState) {
+          ///Fecha o dialog de loading
+          Navigator.of(context).popUntil(ModalRoute.withName('/'));
+        }
+
         if (state is LoginSucessoState) {
           if (state.logado) {
             ///proxima pagina
@@ -102,15 +108,13 @@ class _LoginPageState extends State<LoginPage> {
                 height: 16,
               ),
               ElevatedButton(
-                onPressed: logando ? null : logar,
-                child: logando
-                    ? const CircularProgressIndicator()
-                    : const Text('Entrar'),
+                style: const ButtonStyle(
+                  backgroundColor: MaterialStatePropertyAll(Color(0xFF44bd6e)),
+                ),
+                onPressed: logar,
+                child: const Text('Entrar'),
               ),
               const Expanded(child: SizedBox()),
-              TextButton(
-                  onPressed: irParaPoliticaPrivacidade,
-                  child: const Text('Política de privacidade'))
             ],
           ),
         ),
@@ -127,9 +131,5 @@ class _LoginPageState extends State<LoginPage> {
     if (formkey.currentState?.validate() ?? false) {
       store.logar(usuario: usuario.trimRight(), senha: senha.trimRight());
     }
-  }
-
-  void irParaPoliticaPrivacidade() async {
-    await launchUrl(Uri.parse('https://www.google.com/'));
   }
 }

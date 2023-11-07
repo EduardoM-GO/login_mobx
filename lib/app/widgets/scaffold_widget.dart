@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ScaffoldWidget extends StatelessWidget {
   final PreferredSizeWidget? appBar;
-  final Widget? body;
+  final Widget body;
   final Widget? floatingActionButton;
 
   const ScaffoldWidget(
-      {super.key, this.appBar, this.body, this.floatingActionButton});
+      {super.key, this.appBar, required this.body, this.floatingActionButton});
 
   @override
   Widget build(BuildContext context) {
@@ -19,17 +20,32 @@ class ScaffoldWidget extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Colors.blue,
-            Colors.green,
+            Color(0xFF1e4e62),
+            Color(0xFF2e968f),
           ],
         ),
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: appBar,
-        body: body,
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            body,
+            const SizedBox(
+              height: 32,
+            ),
+            TextButton(
+                onPressed: irParaPoliticaPrivacidade,
+                child: const Text('Política de privacidade'))
+          ],
+        ),
         floatingActionButton: floatingActionButton,
       ),
     );
+  }
+
+  void irParaPoliticaPrivacidade() async {
+    await launchUrl(Uri.parse('https://www.google.com/'));
   }
 }
