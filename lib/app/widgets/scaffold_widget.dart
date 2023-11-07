@@ -25,22 +25,35 @@ class ScaffoldWidget extends StatelessWidget {
           ],
         ),
       ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: appBar,
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            body,
-            const SizedBox(
-              height: 32,
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: appBar,
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Expanded(child: body),
+                const SizedBox(
+                  height: 32,
+                ),
+                TextButton(
+                    onPressed: irParaPoliticaPrivacidade,
+                    child: const Text(
+                      'Política de privacidade',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.normal,
+                        wordSpacing: 1,
+                        color: Colors.white,
+                      ),
+                    ))
+              ],
             ),
-            TextButton(
-                onPressed: irParaPoliticaPrivacidade,
-                child: const Text('Política de privacidade'))
-          ],
+          ),
+          floatingActionButton: floatingActionButton,
         ),
-        floatingActionButton: floatingActionButton,
       ),
     );
   }
