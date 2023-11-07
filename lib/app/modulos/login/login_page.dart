@@ -3,15 +3,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
-import 'package:prova_flutter/app/modulos/login/datasources/api.dart';
-import 'package:prova_flutter/app/modulos/login/datasources/login_datasource.dart';
-import 'package:prova_flutter/app/modulos/login/store/login_state.dart';
-import 'package:prova_flutter/app/modulos/login/store/login_store.dart';
-import 'package:prova_flutter/app/modulos/login/validadores/senha_validador.dart';
-import 'package:prova_flutter/app/modulos/login/validadores/usuario_validador.dart';
-import 'package:prova_flutter/app/modulos/login/widgets/input_widget.dart';
-import 'package:prova_flutter/app/widgets/dialogs_widget.dart';
-import 'package:prova_flutter/app/widgets/scaffold_widget.dart';
+import 'package:login_mobx/app/modulos/login/datasources/api.dart';
+import 'package:login_mobx/app/modulos/login/datasources/login_datasource.dart';
+import 'package:login_mobx/app/modulos/login/store/login_state.dart';
+import 'package:login_mobx/app/modulos/login/store/login_store.dart';
+import 'package:login_mobx/app/modulos/login/validadores/senha_validador.dart';
+import 'package:login_mobx/app/modulos/login/validadores/usuario_validador.dart';
+import 'package:login_mobx/app/modulos/login/widgets/input_widget.dart';
+import 'package:login_mobx/app/widgets/dialogs_widget.dart';
+import 'package:login_mobx/app/widgets/scaffold_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LoginPage extends StatefulWidget {

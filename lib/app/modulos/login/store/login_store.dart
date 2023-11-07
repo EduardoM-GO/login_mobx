@@ -1,6 +1,6 @@
+import 'package:login_mobx/app/modulos/login/datasources/login_datasource.dart';
+import 'package:login_mobx/app/modulos/login/store/login_state.dart';
 import 'package:mobx/mobx.dart';
-import 'package:prova_flutter/app/modulos/login/datasources/login_datasource.dart';
-import 'package:prova_flutter/app/modulos/login/store/login_state.dart';
 
 class LoginStore {
   final LoginDatasource datasource;

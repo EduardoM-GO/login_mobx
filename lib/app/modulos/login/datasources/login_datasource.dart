@@ -1,5 +1,5 @@
 import 'package:flutter_result/flutter_result.dart';
-import 'package:prova_flutter/app/modulos/login/datasources/api.dart';
+import 'package:login_mobx/app/modulos/login/datasources/api.dart';
 
 abstract class LoginDatasource {
   Future<Result<bool, Exception>> call(
