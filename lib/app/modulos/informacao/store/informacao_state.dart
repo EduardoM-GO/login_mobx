@@ -9,14 +9,7 @@ class InformacaoInicialState extends InformacaoState {}
 
 class InformacaoCarregandoState extends InformacaoState {}
 
-class InformacaoSucessoState extends InformacaoState {
-  final List<String> informacoes;
-
-  InformacaoSucessoState(this.informacoes);
-
-  @override
-  List<Object> get props => [informacoes];
-}
+class InformacaoSucessoState extends InformacaoState {}
 
 class InformacaoErroState extends InformacaoState {
   final Exception erro;

@@ -26,13 +26,15 @@ void main() {
         () => cache.get(),
       ).thenReturn(Result.success(informacoes));
 
+      expect(store.informacoesBase, equals([]));
       expect(store.state.value, equals(InformacaoInicialState()));
       store.state.observe((value) {
         if (value.oldValue is InformacaoInicialState) {
           expect(value.newValue, equals(InformacaoCarregandoState()));
           return;
         }
-        expect(value.newValue, equals(InformacaoSucessoState(informacoes)));
+        expect(value.newValue, equals(InformacaoSucessoState()));
+        expect(store.informacoesBase, equals(informacoes));
       });
       store.obterInformacoes();
     });
@@ -41,6 +43,7 @@ void main() {
         () => cache.get(),
       ).thenReturn(Result.error(erro));
 
+      expect(store.informacoesBase, equals([]));
       expect(store.state.value, equals(InformacaoInicialState()));
       store.state.observe((value) {
         if (value.oldValue is InformacaoInicialState) {
@@ -52,27 +55,29 @@ void main() {
       store.obterInformacoes();
     });
   });
-  group('informacao store - gravaInformacoes -', () {
+  group('informacao store - inserir -', () {
     test('OK', () {
       when(
-        () => cache.set(informacoes),
+        () => cache.set(['teste1']),
       ).thenAnswer((_) async => Result.success(true));
 
+      expect(store.informacoesBase, equals([]));
       expect(store.state.value, equals(InformacaoInicialState()));
       store.state.observe((value) {
         if (value.oldValue is InformacaoInicialState) {
           expect(value.newValue, equals(InformacaoCarregandoState()));
           return;
         }
-        expect(value.newValue, equals(InformacaoSucessoState(informacoes)));
+        expect(value.newValue, equals(InformacaoSucessoState()));
+        expect(store.informacoesBase, equals(['teste1']));
       });
-      store.gravaInformacoes(informacoes);
+      store.inserir('teste1');
     });
     test('Erro', () {
       when(
-        () => cache.set(informacoes),
+        () => cache.set(['teste1']),
       ).thenAnswer((_) async => Result.error(erro));
-
+      expect(store.informacoesBase, equals([]));
       expect(store.state.value, equals(InformacaoInicialState()));
       store.state.observe((value) {
         if (value.oldValue is InformacaoInicialState) {
@@ -81,7 +86,105 @@ void main() {
         }
         expect(value.newValue, equals(InformacaoErroState(erro)));
       });
-      store.gravaInformacoes(informacoes);
+      store.inserir('teste1');
+    });
+  });
+
+  group('informacao store - editar -', () {
+    late List<String> original;
+    late List<String> esperado;
+
+    setUp(() {
+      original = List.generate(10, (index) => '$index');
+      esperado = original;
+      esperado[3] = 'teste';
+
+      store.informacoesBase = original;
+    });
+
+    test('OK', () {
+      when(
+        () => cache.set(esperado),
+      ).thenAnswer((_) async => Result.success(true));
+
+      expect(store.informacoesBase, equals(original));
+      expect(store.state.value, equals(InformacaoInicialState()));
+
+      store.state.observe((value) {
+        if (value.oldValue is InformacaoInicialState) {
+          expect(value.newValue, equals(InformacaoCarregandoState()));
+          return;
+        }
+        expect(value.newValue, equals(InformacaoSucessoState()));
+        expect(store.informacoesBase, equals(esperado));
+      });
+      store.editar(index: 3, texto: 'teste');
+    });
+    test('Erro', () {
+      when(
+        () => cache.set(esperado),
+      ).thenAnswer((_) async => Result.error(erro));
+
+      expect(store.informacoesBase, equals(original));
+      expect(store.state.value, equals(InformacaoInicialState()));
+
+      store.state.observe((value) {
+        if (value.oldValue is InformacaoInicialState) {
+          expect(value.newValue, equals(InformacaoCarregandoState()));
+          return;
+        }
+        expect(value.newValue, equals(InformacaoErroState(erro)));
+      });
+      store.editar(index: 3, texto: 'teste');
+    });
+  });
+
+  group('informacao store - remover -', () {
+    late List<String> original;
+    late List<String> esperado;
+
+    setUp(() {
+      original = List.generate(10, (index) => '$index');
+      esperado = original;
+      esperado.removeAt(4);
+
+      store.informacoesBase = original;
+    });
+
+    test('OK', () {
+      when(
+        () => cache.set(esperado),
+      ).thenAnswer((_) async => Result.success(true));
+
+      expect(store.informacoesBase, equals(original));
+      expect(store.state.value, equals(InformacaoInicialState()));
+
+      store.state.observe((value) {
+        if (value.oldValue is InformacaoInicialState) {
+          expect(value.newValue, equals(InformacaoCarregandoState()));
+          return;
+        }
+        expect(value.newValue, equals(InformacaoSucessoState()));
+        expect(store.informacoesBase, equals(esperado));
+      });
+      store.remover(4);
+    });
+    test('Erro', () {
+      when(
+        () => cache.set(esperado),
+      ).thenAnswer((_) async => Result.error(erro));
+
+      expect(store.informacoesBase, equals(original));
+      expect(store.state.value, equals(InformacaoInicialState()));
+
+      store.state.observe((value) {
+        if (value.oldValue is InformacaoInicialState) {
+          expect(value.newValue, equals(InformacaoCarregandoState()));
+          return;
+        }
+        expect(value.newValue, equals(InformacaoErroState(erro)));
+      });
+      store.remover(4);
     });
   });
 }

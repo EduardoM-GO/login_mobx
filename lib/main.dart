@@ -14,8 +14,7 @@ void main() async {
   GetIt.I.registerFactory<LoginDatasource>(() => LoginDatasourceImpl(Api()));
   GetIt.I.registerSingleton<LoginStore>(LoginStore(GetIt.I()));
   final SharedPreferences preferences = await SharedPreferences.getInstance();
-  GetIt.I
-      .registerFactory<InformacaoCache>(() => InformacaoCacheImpl(preferences));
+  GetIt.I.registerSingleton<InformacaoCache>(InformacaoCacheImpl(preferences));
   GetIt.I.registerSingleton<InformacaoStore>(InformacaoStore(GetIt.I()));
 
   runApp(MaterialApp(

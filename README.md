@@ -4,13 +4,19 @@ A new Flutter project.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+Login aceito na tela: 
+ - Usuário: teste
+ - Senha: 123456
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+# Package externos
+- url_launcher: Para abrir link.
+- mobx: Gereanciador de estado.
+- get_it: Injeção de dependencia.
+- result: Retorno múltiplo no formato Failure e Success.
+- equatable: usado para fazer comparação dos objetos
+- shared_preferences: armazena os dados em cache.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# Package externos (Dev)
+
+- Mocktail: Para testes de unidade.

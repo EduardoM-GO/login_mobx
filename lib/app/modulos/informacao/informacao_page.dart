@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:login_mobx/app/modulos/informacao/store/informacao_state.dart';
 import 'package:login_mobx/app/modulos/informacao/store/informacao_store.dart';
+import 'package:login_mobx/app/modulos/informacao/validadores/campo_obrigatorio_validador.dart';
+import 'package:login_mobx/app/modulos/informacao/widgets/card_informacao_widget.dart';
 import 'package:login_mobx/app/modulos/login/widgets/input_widget.dart';
 import 'package:login_mobx/app/widgets/dialogs_widget.dart';
 import 'package:login_mobx/app/widgets/scaffold_widget.dart';
@@ -20,17 +22,26 @@ class _InformacaoPageState extends State<InformacaoPage> {
   late final InformacaoStore store;
   late final FocusNode focusNode;
 
-  late String texto;
+  late final GlobalKey<FormState> formKey;
+  late final TextEditingController controller;
 
   @override
   void initState() {
     super.initState();
     store = GetIt.I.get<InformacaoStore>();
     focusNode = FocusNode();
-    texto = '';
+    formKey = GlobalKey<FormState>();
+    controller = TextEditingController();
     scheduleMicrotask(() {
       adicionarObserver(context);
+      store.obterInformacoes();
     });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -42,10 +53,31 @@ class _InformacaoPageState extends State<InformacaoPage> {
             child: ColoredBox(
               color: Colors.white,
               child: ListView.separated(
-                  itemBuilder: (context, index) => Text(informacoes[index]),
-                  separatorBuilder: (context, index) => const SizedBox(
-                        height: 8,
+                  itemBuilder: (context, index) => CardInformacaoWidget(
+                        texto: informacoes[index],
+                        editar: () async {
+                          final result = await DialogsWidget.formulario(
+                              context: context,
+                              valorInicial: informacoes[index]);
+
+                          if (result != null) {
+                            store.editar(index: index, texto: result);
+                          }
+                        },
+                        excluir: () => DialogsWidget.alert(
+                          context: context,
+                          message: 'Deseja excluir este registro?',
+                          textLeft: 'Não',
+                          textRight: 'Sim',
+                          onPressedRight: () {
+                            Navigator.of(context)
+                                .popUntil(ModalRoute.withName('/informacao'));
+                            store.remover(index);
+                          },
+                        ),
                       ),
+                  separatorBuilder: (context, index) =>
+                      const Divider(thickness: 1),
                   itemCount: informacoes.length),
             ),
           ),
@@ -53,13 +85,18 @@ class _InformacaoPageState extends State<InformacaoPage> {
             height: 36,
           ),
           Form(
-            child: InputWidget(
-              autoFocus: true,
-              focus: focusNode,
-              onChanged: (value) {
-                texto = value;
-              },
-              suffixIcon: const Icon(Icons.save),
+            child: Form(
+              key: formKey,
+              child: InputWidget(
+                autoFocus: true,
+                hintText: 'Digite seu texto',
+                focus: focusNode,
+                controller: controller,
+                onEditingComplete: salvar,
+                suffixIcon:
+                    IconButton(onPressed: salvar, icon: const Icon(Icons.save)),
+                validator:CampoObrigatorioValidador().call,
+              ),
             ),
           )
         ],
@@ -73,19 +110,19 @@ class _InformacaoPageState extends State<InformacaoPage> {
 
       if (state is InformacaoCarregandoState) {
         DialogsWidget.loading(
-            context: context, title: 'Login', message: 'Logando ...');
+            context: context, title: 'Login', message: 'Carregando ...');
         return;
       }
 
       if (value.oldValue is InformacaoCarregandoState &&
           state is! InformacaoCarregandoState) {
         ///Fecha o dialog de loading
-        Navigator.of(context).popUntil(ModalRoute.withName('/'));
+        Navigator.of(context).popUntil(ModalRoute.withName('/informacao'));
       }
 
       if (state is InformacaoSucessoState) {
         setState(() {
-          informacoes = state.informacoes;
+          informacoes = store.informacoes;
         });
       }
       if (state is InformacaoErroState) {
@@ -97,5 +134,12 @@ class _InformacaoPageState extends State<InformacaoPage> {
       }
     });
   }
- 
+
+  void salvar() async {
+    if (formKey.currentState?.validate() ?? false) {
+      await store.inserir(controller.text);
+      controller.text = '';
+    }
+    focusNode.requestFocus();
+  }
 }

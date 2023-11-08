@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:login_mobx/app/modulos/informacao/validadores/campo_obrigatorio_validador.dart';
+import 'package:login_mobx/app/modulos/login/widgets/input_widget.dart';
 
 //enum DialogLoading { close }
 
@@ -95,5 +97,54 @@ class DialogsWidget {
         ],
       ),
     );
+  }
+
+  static Future<String?> formulario({
+    required BuildContext context,
+    String? valorInicial,
+  }) async {
+    String? texto;
+    final formKey = GlobalKey<FormState>();
+    await showDialog<void>(
+      context: context,
+      builder: (_) => AlertDialog(
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              InputWidget(
+                ativarBorda: true,
+                valorInicial: valorInicial,
+                autoFocus: true,
+                onChanged: (value) {
+                  texto = value;
+                },
+                validator: CampoObrigatorioValidador().call,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              texto = null;
+              Navigator.pop(context);
+            },
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              if (formKey.currentState?.validate() ?? false) {
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('Salvar'),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
+    );
+    return texto;
   }
 }
